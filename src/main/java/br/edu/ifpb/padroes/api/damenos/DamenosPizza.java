@@ -2,7 +2,7 @@ package br.edu.ifpb.padroes.api.damenos;
 
 public class DamenosPizza {
 
-    private Float cost;
+    private Float  cost;
     private String name;
 
     public Float getCost() {
