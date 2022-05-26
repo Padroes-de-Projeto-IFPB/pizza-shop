@@ -34,7 +34,6 @@ public class PizzaShopService {
                                             new ExtraCheese(
                                                     new PanPizza( new StuffedCrust())));
 
-
         Float totalPrice = newPizza.totalPrice(pizza.getPrice());
         String name = newPizza.name(pizza.getName());
 
