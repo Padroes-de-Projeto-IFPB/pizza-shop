@@ -28,7 +28,7 @@ public class PizzaShopService {
     }
 
     // TODO - implementar decorator para não precisar atributos da pizza como parâmetros no método
-    public void orderPizza(Pizza pizza, boolean discountCoupon, boolean extraCheese, boolean panPizza, boolean stuffedCrust) {
+    public void orderPizza(Pizza pizza) {
 
         DataPizzaExtraDecorator newPizza = new DiscountCoupon(
                                             new ExtraCheese(
