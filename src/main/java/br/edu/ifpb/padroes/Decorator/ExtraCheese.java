@@ -7,11 +7,11 @@ public class ExtraCheese extends DataPizzaExtraDecorator{
     }
     @Override
     public Float totalPrice(Float valor) {
-        return valor *= 1.10f;
+        return super.totalPrice(valor *= 1.10f);
     }
 
     @Override
     public String name(String name) {
-        return name += " (extra cheese)";
+        return super.name(name += " (extra cheese)");
     }
 }

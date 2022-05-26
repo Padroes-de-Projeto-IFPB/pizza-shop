@@ -7,11 +7,11 @@ public class DiscountCoupon extends DataPizzaExtraDecorator{
     }
     @Override
     public Float totalPrice(Float valor) {
-        return valor *= 0.25f;
+        return super.totalPrice(valor *= 0.25f);
     }
 
     @Override
     public String name(String name) {
-        return name;
+        return super.name(name);
     }
 }

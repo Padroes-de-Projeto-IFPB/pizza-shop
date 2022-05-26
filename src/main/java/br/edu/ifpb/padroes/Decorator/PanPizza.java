@@ -8,12 +8,12 @@ public class PanPizza extends DataPizzaExtraDecorator{
     }
     @Override
     public Float totalPrice(Float valor) {
-        return valor *= 1.15f; // 15% increase
+        return super.totalPrice(valor *= 1.15f); // 15% increase
 
     }
 
     @Override
     public String name(String name) {
-        return name += " (pan pizza)";
+        return super.name(name += " (pan pizza)");
     }
 }
