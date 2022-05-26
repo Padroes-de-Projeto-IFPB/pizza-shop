@@ -1,13 +1,17 @@
 package br.edu.ifpb.padroes.service;
 
-import br.edu.ifpb.padroes.api.damenos.DamenosPizza;
-import br.edu.ifpb.padroes.api.damenos.DamenosServiceImpl;
-import br.edu.ifpb.padroes.api.damenos.proxy.DamenosService;
-import br.edu.ifpb.padroes.api.pizzahot.PizzaHotPizza;
-import br.edu.ifpb.padroes.api.pizzahot.PizzaHotServiceImpl;
-import br.edu.ifpb.padroes.api.pizzahot.proxy.PizzaHotService;
 import br.edu.ifpb.padroes.domain.Pizza;
+import br.edu.ifpb.padroes.api.damenos.DamenosPizza;
+import br.edu.ifpb.padroes.api.damenos.proxy.DamenosService;
+import br.edu.ifpb.padroes.api.damenos.proxy.DamenosServiceProxy;
+import br.edu.ifpb.padroes.domain.adapter.DamenosAdapter;
+import br.edu.ifpb.padroes.api.pizzahot.PizzaHotPizza;
+import br.edu.ifpb.padroes.api.pizzahot.proxy.PizzaHotService;
+import br.edu.ifpb.padroes.api.pizzahot.proxy.PizzaHotServiceProxy;
+import br.edu.ifpb.padroes.domain.adapter.PizzahotAdapter;
+import br.edu.ifpb.padroes.service.decorator.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PizzaShopService {
@@ -17,38 +21,28 @@ public class PizzaShopService {
 
     public PizzaShopService() {
         // TODO - alterar criação de instância para chamar para o Proxy de Cache
-        damenosService = new DamenosServiceImpl();
-        pizzaHotService = new PizzaHotServiceImpl();
+        damenosService = new DamenosServiceProxy();
+        pizzaHotService = new PizzaHotServiceProxy();
     }
 
     // TODO - implementar decorator para não precisar atributos da pizza como parâmetros no método
-    public void orderPizza(Pizza pizza, boolean discountCoupon, boolean extraCheese, boolean panPizza, boolean stuffedCrust) {
+    public void orderPizza(Pizza pizza) {
 
-        Float totalPrice = pizza.getPrice();
-        String name = pizza.getName();
+        DemandDecorator demand;
 
-        // cupom de desconto
-        if (discountCoupon) {
-            totalPrice *= 0.25f; // 25% discount
-        }
+        demand =
+                new ExtraCheese(
+                    new StuffedCrust(
+                        new Discount(
+                            new DemandStandard(pizza)
+                    )
+                )
+            );
 
-        // queijo extra
-        if (extraCheese) {
-            totalPrice *= 1.10f; // 10% increase
-            name += " (extra cheese)";
-        }
+        Float totalPrice = demand.updatePrice(pizza.getPrice());
+        String name = demand.updateName(pizza.getName());
 
-        // massa pan
-        if (panPizza) {
-            totalPrice *= 1.15f; // 15% increase
-            name += " (pan pizza)";
-        }
-
-        // borda recheada
-        if (stuffedCrust) {
-            totalPrice *= 1.20f; // 20% increase
-            name += " (stuffed crust)";
-        }
+//
 
         System.out.println(String.format("New order for = %s", name));
         System.out.println(String.format("Total price = %f", totalPrice));
@@ -56,7 +50,25 @@ public class PizzaShopService {
     }
 
     // TODO - implementar adapter para unificar pizzas vindas das APIs Damenos e PizzaHot num único método getPizzas()
-    // TODO - public List<Pizza> getPizzas() {}
+    //      - public List<Pizza> getPizzas() {}
+    public List<Pizza> getPizzas() {
+        List<Pizza> listaPizza = new ArrayList<>();
+
+        DamenosAdapter damenosPizza;
+        PizzahotAdapter pizzahotPizza;
+
+        for (DamenosPizza pizza : this.getPizzasDamenos()) {
+            damenosPizza = new DamenosAdapter(pizza);
+            listaPizza.add(damenosPizza);
+        }
+
+        for (PizzaHotPizza pizza : this.getPizzasPizzaHot()) {
+            pizzahotPizza = new PizzahotAdapter(pizza);
+            listaPizza.add(pizzahotPizza);
+        }
+
+        return listaPizza;
+    }
 
     public List<DamenosPizza> getPizzasDamenos() {
         return damenosService.getPizzas();
